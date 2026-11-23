@@ -212,9 +212,9 @@ textarea {
   height: 28px;
   display: block;
 }
-/* the colour mark is for dark surfaces only; on light surfaces it is the ink mark (brand/SPEC.md) */
-html[data-theme="light"] .brand-icon svg rect {
-  fill: #111318;
+/* the mark is one colour: white on dark surfaces, black on light ones (brand/SPEC.md) */
+.brand-icon svg {
+  color: var(--text);
 }
 .brand-icon img {
   width: 100%;

@@ -1,40 +1,28 @@
-# Nawy identity - specification (general identity: the noon grid)
+# Nawy identity - specification (primary: the one-colour noon grid)
 
-Master tile T = 512. phi = 1.6180339887. Source SVGs are in `brand/svg/`.
+Master tile T = 512. phi = 1.6180339887. Everything in `brand/svg/` and every shipped icon is drawn by `brand/make-derived-icons.py` from one geometry; do not edit the SVGs by hand.
 
 ## The mark
 
-- A 3x3 grid of sharp-cornered squares with no gaps. The grid is "noon": one hero dot at top-centre plus five lit squares along the stroke; three neutral ghost squares (white 10%) sit left, right and below the dot.
-- Mark width = T / phi = 316.4 (cell 105.5). Margins top : bottom = 1 : phi. Tile corner radius = T / phi^3.
-- Order along the stroke (left, base-left, base-mid, base-right, right): coral, sunny yellow, mint, calm blue, lavender. One teal only: the hero.
+- A 3x3 grid of sharp-cornered squares with no gaps and no ghost squares. Six squares are lit: one at top-centre (the dot) and the left, centre and right squares of the bottom row plus the left and right squares of the middle row. The centre of the grid stays empty.
+- Mark width = T / phi = 316.4 (cell 105.5), centred. Tile corner radius = T / phi^3 = 120.9.
+- One colour only. Two pairings: white on black (primary, `#FFFFFF` on `#000000`) and black on white (`-light` files).
+- No gradients, outlines or shadows; do not recolour single squares; do not rotate or re-space the grid. Clear space: at least one cell on every side.
 
-## Colours
+## Safe zones (nothing may be cut off)
 
-| Role | Hex |
-|---|---|
-| Hero (sea teal) | `#29CAC0` |
-| Coral | `#FDB0AD` |
-| Sunny yellow | `#FCDB81` |
-| Mint | `#9EE0AF` |
-| Calm blue | `#87B1E6` |
-| Lavender | `#D4BAF4` |
-| Tile (Ink) | `#111318` |
-
-About 60 degrees between hue families; lightness alternates so neighbours separate (dE 11-17).
+- Maskable (`app-icon-maskable.svg`, `maskable-icon.png`): full-bleed square; the smallest circle around the six squares is centred on the tile and has radius 0.37 T, inside the 0.40 T safe circle of the W3C maskable spec. The mark width is 0.584 T, and it sits a third of a cell higher than the plain mark because the bottom corners are the farthest points.
+- Monochrome (Android themed icon, `monochrome-icon.png`): black cells on transparent, enclosing circle 0.33 T so the launcher's adaptive crop cannot cut it.
+- Plain `any` icons (`icon-192/512`): rounded tile with the mark at 1/phi, margins of 19% on every side. `apple-touch-icon.png` (180) is the same on a square opaque tile, because iOS applies its own mask.
+- Up to 48 px (`favicon-16x16.png`, `favicon-32x32.png`, `favicon.ico`) use the larger mark, 0.74 T.
 
 ## Files
 
-- `svg/app-icon.svg` (grid with ghosts on the tile), `svg/app-icon-square.svg` (full-bleed square), `svg/app-icon-small-optical.svg` (<= 48 px: larger mark, 0.80 T, no ghosts).
-- `svg/mark-color.svg` (for dark surfaces only), `svg/mark-white.svg`, `svg/mark-ink.svg` (black), `svg/notification-badge.svg` (solid white cells, no tile).
-- Optical sizing: up to 48 px use the larger mark without ghost squares. Maskable and round icons use a smaller centred mark.
-- Monochrome and badge: solid cells, no colour.
-
-## Rules
-
-- No gradients, outlines or shadows; do not recolour individual squares; do not rotate or re-space the grid.
-- `mark-color` only on dark surfaces; on light surfaces use `mark-ink`.
-- Clear space: at least one cell (T / 5) on every side.
+- `svg/app-icon.svg`, `app-icon-square.svg`, `app-icon-maskable.svg`, `app-icon-small.svg` (white on black) and the same four with `-light` (black on white).
+- `svg/mark-white.svg`, `svg/mark-ink.svg` (no tile), `svg/monochrome-icon.svg`, `svg/notification-badge.svg` (white cells, grid 0.8 T).
+- `favicon.svg` is generated into the repo root: black tile on light browser themes, white tile on dark ones (`prefers-color-scheme`).
+- `brand/light/` holds the black-on-white 512 and maskable PNGs; they are not published.
 
 ## Shipped files (repo root)
 
-`icon-192.png`, `icon-512.png`, `maskable-icon.png`, `apple-touch-icon.png` (180), `favicon.ico`, `favicon-16x16.png`, `favicon-32x32.png`, `favicon.svg` come from the master pack. `monochrome-icon.png` and `notification-badge.png` are drawn by `brand/make-derived-icons.py` from `svg/mark-ink.svg` and `svg/notification-badge.svg`.
+`icon-192.png`, `icon-512.png`, `maskable-icon.png`, `apple-touch-icon.png`, `favicon.ico`, `favicon-16x16.png`, `favicon-32x32.png`, `favicon.svg`, `monochrome-icon.png`, `notification-badge.png`. Regenerate with `python3 brand/make-derived-icons.py` (needs Pillow).

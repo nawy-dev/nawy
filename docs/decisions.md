@@ -913,3 +913,14 @@ Format: `ID — title`, then status, date, decision, reason, rejected alternativ
 - Limits to keep honest: installed copies refresh the home-screen icon only when the browser or launcher refreshes the manifest (Android usually within days; iOS keeps the old icon until the app is re-added). The share-card image draws `icon-192.png`, so shared cards now carry the new icon.
 - Tests: the icon sizes test checks the new `favicon.svg`; the header test checks the grid geometry and that the old slash is gone. `npm test`: 159 pass.
 - Version: 1.60.0.
+
+## 121 — The one-colour mark is the primary app icon; safe zones; every icon drawn from one script
+
+- Status: accepted (refines decision 120)
+- Date: 2026-11-23
+- Decision: the app icon is the same grid mark in one colour, taken from the owner's own drawing: white on black is primary, black on white is the light variant. The colour grid, the ghost squares and the teal/pastel palette of decision 120 are removed from the icons and from `brand/` (`svg/mark-color.svg` is gone); the header mark is the same shape in `currentColor` (the text colour of the theme). In-app accent colours are unchanged.
+- Safe zones: the old maskable icon placed the farthest corners of the mark at 0.437 of the tile width from the centre, outside the 0.40 safe circle, so a circular launcher mask could cut the bottom corners. The maskable icon now centres the mark's smallest enclosing circle on the tile with radius 0.37 (measured on the PNG: 0.369), the monochrome icon uses 0.33 so an adaptive crop cannot touch it, and the plain icons keep margins of 19%.
+- Source of truth: `brand/make-derived-icons.py` now writes every SVG in `brand/svg/` and every shipped PNG/ICO/favicon from one geometry (the pack's PNGs are no longer copied). The `any` icon matches the owner's 1024 drawing with zero differing pixels. `favicon.svg` switches to a white tile on dark browser themes through `prefers-color-scheme`; the PNG/ICO fallbacks stay black.
+- Not changed on purpose: manifest `theme_color` / `background_color`, the in-app backgrounds, game colours, the notification badge shape and size.
+- Limits: installed copies refresh the home-screen icon only when the launcher refreshes the manifest (Android usually within days; iOS keeps the old icon until the app is re-added). Browser tests were not run in the authoring sandbox (no Playwright); `npm test` 159 pass.
+- Version: 1.61.0.

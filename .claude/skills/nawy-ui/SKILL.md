@@ -18,13 +18,12 @@ description: Nawy UI rules: Arabic-first RTL/LTR, logical CSS, localization, des
 - Support light and dark via tokens, not per-component overrides.
 - Shared components are extracted only when two or more screens genuinely need them, and must keep Nawy's personality.
 
-## Brand identity (decisions 023, 120)
+## Brand identity (decisions 023, 120, 121)
 
-- Source of truth is `brand/` (spec in `brand/SPEC.md`, SVGs in `brand/svg/`). The shipped icons come from the master pack; `brand/make-derived-icons.py` redraws the monochrome icon and the notification badge from `svg/mark-ink.svg` and `svg/notification-badge.svg`.
-- The mark is the noon grid: a 3x3 grid of sharp squares, a teal hero `#29CAC0` at top-centre and five lit squares (coral, sunny yellow, mint, calm blue, lavender) on the Ink tile `#111318`. The colour mark is for dark surfaces only; on light surfaces use the ink mark (the header does this in CSS).
-- Never: gradients, outlines or shadows; recolouring or re-spacing single squares; rotating the grid. Keep at least one cell of clear space around the mark.
-- Up to 48 px use the larger mark without ghost squares; maskable and round icons use a smaller centred mark. Do not replace them with a scaled copy of the 512 icon.
-- The in-app accent follows the user's choice (blue by default); the brand mark no longer follows it.
+- Source of truth is `brand/SPEC.md`; `python3 brand/make-derived-icons.py` draws every icon and every SVG in `brand/svg/` from one geometry. Do not hand-edit the generated files.
+- The mark is the one-colour noon grid: a 3x3 grid with six squares lit (top-centre, the two sides of the middle row, the whole bottom row) and an empty centre. Primary is white on black; black on white is the light variant. No colour grid, no ghost squares, no gradients, outlines or shadows.
+- Safe zones: the maskable icon's mark fits inside 0.37 of the width from the centre, the monochrome icon inside 0.33; never replace them with a scaled copy of the 512 icon. Up to 48 px the larger mark is used.
+- The header mark is the same shape in `currentColor`. The in-app accent follows the user's choice (blue by default); the brand mark does not.
 
 ## Motion
 

@@ -436,16 +436,14 @@ test("every icon in the manifest and head exists with the declared size (brand f
   );
   assert.equal(png("monochrome-icon.png").alpha, true, "the monochrome icon must have transparency");
   assert.match(read("favicon.svg"), /<svg[^>]*viewBox="0 0 512 512"/);
-  assert.ok(read("favicon.svg").includes("#29CAC0"), "favicon.svg must be the noon-grid mark (hero teal)");
+  assert.ok(read("favicon.svg").includes("prefers-color-scheme: dark"), "favicon.svg must flip black/white with the browser theme");
 });
 
 test("the header mark is the Nawy noon grid and both pages use the shared icon files, not inline copies", () => {
   const html = read("index.html");
-  assert.match(html, /<svg viewBox="97\.78 97\.78 316\.88 316\.88"[^>]*aria-label="ناوي"/, "header symbol missing");
-  assert.ok(
-    html.includes('<rect x="203.26" y="97.78" width="105.88" height="105.88" fill="#29CAC0"/>'),
-    "hero square differs from the spec"
-  );
+  assert.match(html, /<svg viewBox="0 0 3 3"[^>]*aria-label="ناوي"[^>]*fill="currentColor"/, "header symbol missing");
+  assert.ok(html.includes('d="M1 0H2V1H3V3H0V1H1ZM1 1V2H2V1Z"'), "mark geometry differs from the spec (6 squares, empty centre)");
+  assert.ok(!html.includes("#29CAC0"), "the header mark is one colour (currentColor), not the colour grid");
   assert.ok(!html.includes("M256 256H353.783"), "the old dot-and-slash symbol must be gone");
   const game = read("game.html");
   assert.ok(!/href="data:image/.test(game), "game.html must not embed icon data URIs");
