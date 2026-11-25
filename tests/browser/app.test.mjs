@@ -555,3 +555,69 @@ test("share image: the canvas card is drawn and downloaded as a real PNG (light 
   }
   await page.close();
 });
+
+// زر التثبيت في الهيدر: مفيش بانر ولا توست عند التشغيل، والزر بيظهر في تبويب المتصفح بس ويختفي بعد التثبيت.
+async function openInstallPage(init) {
+  const { page, close } = await newPageWithoutWorker();
+  if (init) await page.addInitScript(init);
+  await page.goto(`${base}/index.html`);
+  await page.waitForLoadState("load");
+  await page.waitForTimeout(1500);
+  return { page, close };
+}
+
+test("install: a browser tab shows the header install button, with no banner and no toast at startup", async () => {
+  const { page, close } = await openInstallPage();
+  assert.equal(await page.locator("#installBtn").isVisible(), true);
+  assert.equal(await page.locator("#installBanner").count(), 0, "the bottom banner is gone");
+  assert.equal(await page.locator(".toastify").count(), 0, "no toast at startup");
+  assert.equal(await page.locator("#installBtn").evaluate(el => el.closest("header") !== null), true);
+  await page.locator("#installBtn").click(); // بدون نافذة تثبيت من المتصفح: إرشاد قصير بس
+  await page.waitForTimeout(300);
+  assert.equal(await page.locator(".toastify").count(), 1);
+  await close();
+});
+
+test("install: the button is hidden inside the installed app", async () => {
+  const { page, close } = await openInstallPage(() => {
+    Object.defineProperty(navigator, "standalone", { get: () => true });
+  });
+  assert.equal(await page.locator("#installBtn").isVisible(), false);
+  await close();
+});
+
+test("install: accepting the prompt hides the button for good, and a new prompt event brings it back", async () => {
+  const { page, close } = await openInstallPage();
+  await page.evaluate(() => {
+    const e = new Event("beforeinstallprompt", { cancelable: true });
+    e.prompt = () => (window.__prompted = true);
+    e.userChoice = Promise.resolve({ outcome: "accepted" });
+    window.dispatchEvent(e);
+  });
+  await page.locator("#installBtn").click();
+  await page.waitForTimeout(300);
+  assert.equal(await page.evaluate(() => window.__prompted), true);
+  assert.equal(await page.locator("#installBtn").isVisible(), false);
+  await page.reload();
+  await page.waitForTimeout(1500);
+  assert.equal(
+    await page.locator("#installBtn").isVisible(),
+    false,
+    "stays hidden when the site is opened in a tab later"
+  );
+  await page.evaluate(() => window.dispatchEvent(new Event("beforeinstallprompt", { cancelable: true })));
+  assert.equal(
+    await page.locator("#installBtn").isVisible(),
+    true,
+    "the browser offers install again: it was uninstalled"
+  );
+  await close();
+});
+
+test("install: the appinstalled event hides the button", async () => {
+  const { page, close } = await openInstallPage();
+  assert.equal(await page.locator("#installBtn").isVisible(), true);
+  await page.evaluate(() => window.dispatchEvent(new Event("appinstalled")));
+  assert.equal(await page.locator("#installBtn").isVisible(), false);
+  await close();
+});

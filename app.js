@@ -383,13 +383,17 @@ initSheetGestures();
 
 initUpdates();
 
+// زر التثبيت في الهيدر (مفيش بانر ولا توست عند التشغيل): بيظهر في تبويب المتصفح بس لو التطبيق مش مثبّت،
+// وبيختفي لما يتثبّت أو جوه التطبيق المثبّت. الأندرويد/الكروم بيفتح نافذة التثبيت مباشرة،
+// وغيره (آيفون، فايرفوكس) بيظهر له إرشاد قصير.
 window.addEventListener("beforeinstallprompt", e => {
   e.preventDefault();
   deferredInstallPrompt = e;
-  showInstallBanner();
+  setInstalledFlag(false);
+  refreshInstallButton();
 });
 
-$("#installAction").addEventListener("click", async () => {
+$("#installBtn").addEventListener("click", async () => {
   if (deferredInstallPrompt) {
     deferredInstallPrompt.prompt();
 
@@ -397,10 +401,11 @@ $("#installAction").addEventListener("click", async () => {
 
     if (choice.outcome === "accepted") {
       showToast("تم تثبيت ناوي 🌱");
+      setInstalledFlag(true);
     }
 
     deferredInstallPrompt = null;
-    hideInstallBanner();
+    refreshInstallButton();
     return;
   }
 
@@ -410,32 +415,14 @@ $("#installAction").addEventListener("click", async () => {
   showToast(message, false);
 });
 
-$("#installDismiss").addEventListener("click", () => {
-  hideInstallBanner();
-  sessionStorage.setItem("nawyInstallDismissed", "1");
-
-  setTimeout(() => {
-    if (!isAppInstalled()) {
-      showInstallBanner();
-    }
-  }, 30000);
-});
-
 window.addEventListener("appinstalled", () => {
-  hideInstallBanner();
   deferredInstallPrompt = null;
+  setInstalledFlag(true);
+  refreshInstallButton();
 });
 
-window.addEventListener("load", () => {
-  if (!isAppInstalled() && !sessionStorage.getItem("nawyInstallDismissed")) {
-    setTimeout(showInstallBanner, 700);
-  }
-});
-
-window.addEventListener("appinstalled", () => {
-  $("#installBanner").classList.remove("show");
-  deferredInstallPrompt = null;
-});
+window.matchMedia("(display-mode: standalone)").addEventListener("change", refreshInstallButton);
+refreshInstallButton();
 
 // مراقبة تغييرات IndexedDB من تابات تانية (Multi-tab). Dexie بيبعت التغييرات
 // عبر BroadcastChannel تلقائيًا، فـ liveQuery بيتفعّل في أي تاب تاني فاتح
@@ -554,16 +541,11 @@ async function init() {
     setTimeout(() => openComposer(), 150);
   }
 
-  runDailyReminderCheck();
   setInterval(runBackgroundReminderCheck, 15 * 60 * 1000);
 
   if (settings.notificationEnabled && "Notification" in window && Notification.permission === "granted") {
     registerPeriodicReminderSync();
   }
-
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") runDailyReminderCheck();
-  });
 }
 
 function startApp() {

@@ -1,6 +1,6 @@
 // التذكيرات والإشعارات: تحديث واجهة الإشعار، طلب الإذن، فحص تذكير اليوم (في الصفحة وفي الخلفية)، تسجيل الـ periodic sync، وإشعار الصباح.
 // classic script بيتحمّل قبل app.js؛ تعريفات بس (دوال) من غير أي تنفيذ وقت التحميل، وبيستخدم $ و t و tf و settings و tasks و getDateKey وغيرهم من app.js وقت التشغيل.
-/* exported updateNotifUI, requestNotificationPermission, runDailyReminderCheck, runBackgroundReminderCheck, registerPeriodicReminderSync, showMorningNotification, initReminderToggle */
+/* exported updateNotifUI, requestNotificationPermission, runBackgroundReminderCheck, registerPeriodicReminderSync, showMorningNotification, initReminderToggle */
 
 function updateNotifUI() {
   const checkbox = $("#notifToggleCheckbox");
@@ -30,41 +30,6 @@ async function requestNotificationPermission() {
     console.warn("Notification permission error", error);
     showToast(t("notifDeniedToast"));
     return false;
-  }
-}
-
-// النظام القديم كان يحاول يضبط معاد دقيق بالـ setTimeout، وهو وعد
-// كاذب لأنه مش هيشتغل لو المتصفح أو التطبيق مقفول. بدل ده، عندنا
-// مستويين: (1) تذكير داخل التطبيق نفسه، من غير أي إذن مطلوب، بيظهر
-// أول ما يُفتح التطبيق أو يرجع للواجهة، لو النية اليومية لسه مش
-// متحققة، مرة واحدة بس في اليوم. (2) لو المستخدم فعّل إشعارات
-// النظام، نحاول كمان نبعت إشعار حقيقي "بأفضل إمكانية" وقت ما
-// المتصفح يسمح بيه (مش وقت محدد بدقة).
-function runDailyReminderCheck() {
-  const now = new Date();
-  const todayKey = NawyDates.getDateKey(now);
-  // القرار نفسه في الـ Core (مشترك مع الـ Service Worker): رسالة داخل التطبيق.
-  const decision = NawyData.decideReminder({
-    settings,
-    pinnedTask: getTodayPinnedTask(),
-    now,
-    channel: "in-app"
-  });
-  if (!decision.show) return;
-
-  settings.lastReminderShownDate = todayKey;
-  saveSettings();
-
-  showToast(`🌱 ${t("morningNotif")}`);
-
-  if (
-    settings.notificationEnabled &&
-    "Notification" in window &&
-    Notification.permission === "granted" &&
-    document.visibilityState !== "visible" &&
-    NawyData.isReminderHour(now)
-  ) {
-    showMorningNotification();
   }
 }
 

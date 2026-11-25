@@ -759,3 +759,18 @@ test("tombstones.js is an ES module wired everywhere; task-actions.js uses it in
   assert.ok(/NawyTombstones\.addTombstone\(/.test(src) && /NawyTombstones\.removeTombstones\(/.test(src));
   assert.ok(!/deletedIds\.filter\(/.test(src), "no inline tombstone filtering left in task-actions.js");
 });
+
+test("the install prompt is a header button (no bottom banner) and the startup reminder toast is gone", () => {
+  const html = read("index.html");
+  assert.match(
+    html,
+    /<header class="header">[\s\S]*id="installBtn"[^>]*hidden[\s\S]*<\/header>/,
+    "install button must be in the header, hidden by default"
+  );
+  assert.ok(!html.includes("installBanner") && !html.includes("install-banner"), "the install banner must be gone");
+  assert.ok(!read("styles.css").includes(".install-banner"), "install banner CSS must be gone");
+  const app = read("app.js");
+  assert.ok(!app.includes("runDailyReminderCheck") && !read("reminders.js").includes("runDailyReminderCheck"));
+  assert.ok(!read("reminders.js").includes("showToast(`🌱"), "no reminder toast at startup");
+  assert.ok(app.includes("refreshInstallButton();") && read("banners.js").includes("display-mode"));
+});

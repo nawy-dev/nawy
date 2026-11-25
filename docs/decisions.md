@@ -924,3 +924,14 @@ Format: `ID — title`, then status, date, decision, reason, rejected alternativ
 - Not changed on purpose: manifest `theme_color` / `background_color`, the in-app backgrounds, game colours, the notification badge shape and size.
 - Limits: installed copies refresh the home-screen icon only when the launcher refreshes the manifest (Android usually within days; iOS keeps the old icon until the app is re-added). Browser tests were not run in the authoring sandbox (no Playwright); `npm test` 159 pass.
 - Version: 1.61.0.
+
+## 122 — Install button in the header instead of the install banner; no reminder toast at startup
+
+- Status: accepted
+- Date: 2026-11-25
+- Decision: (1) the bottom install banner ("نزّل ناوي") and its 30-second re-show are removed. A single "تثبيت" button now sits in the header next to the menu button. It is shown only in a normal browser tab when the app is not installed, and hidden inside the installed app (any display mode other than the browser tab, and iOS `navigator.standalone`) and after installing. (2) The in-app toast "🌱 ناوي على إيه النهارده؟" shown once a day when the app opened is removed: `runDailyReminderCheck` and its two calls are deleted.
+- Install behaviour: where the browser offers `beforeinstallprompt` (Chrome, Edge, Android) the button opens the install dialog; elsewhere (iOS Safari, Firefox) it shows the short existing help message. After the user accepts, or on `appinstalled`, a local flag `nawyInstalled` keeps the button hidden when the site is later opened in a browser tab. A later `beforeinstallprompt` (browsers send it only when the app is not installed) clears the flag, so an uninstalled app gets its button back. The flag is local to one browser and is not a guarantee: a browser that never fires the events and is not iOS keeps showing the button.
+- Reminders: the system notification (settings toggle, 07:00-20:59, up to 3 a day, 3 hours apart; page every 15 minutes in the background, service worker with periodic sync) is unchanged, and so is the shared Core policy `decideReminder`, including its unused `in-app` channel and tests. Nothing now appears in the page when the app opens; the daily reminder reaches the user only as a system notification, so users who never enable notifications get no reminder at all.
+- Strings: `installTitle`, `installSub`, `installDismiss` removed from both languages; `installAction` is now "تثبيت" / "Install" (no emoji). `banners.js` keeps its name and load order and now holds `isAppInstalled`, `setInstalledFlag` and `refreshInstallButton`.
+- Tests: new unit test (header button, no banner, no startup toast) and four browser tests (button visible in a tab, hidden when standalone, hidden for good after accepting and back on a new prompt event, hidden on `appinstalled`). `npm test` 160 pass; browser tests 60 pass on Chromium (Firefox and WebKit run in CI).
+- Version: 1.62.0.

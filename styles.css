@@ -1600,94 +1600,35 @@ html[dir="ltr"] .toggle-switch input:checked + .toggle-slider::before {
   border-color: var(--accent);
 }
 
-.install-banner {
-  pointer-events: none;
-  position: fixed;
-  z-index: 180;
-  left: 50%;
-  bottom: 12px;
-  transform: translate(-50%, 20px);
-  opacity: 0;
-  visibility: hidden;
-  width: min(calc(100% - 28px), 420px);
-  background: var(--surface);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-lg);
-  padding: 14px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease,
-    visibility 0.3s ease;
-}
-.install-banner.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translate(-50%, 0);
-  pointer-events: auto;
-}
-.install-banner-inner {
+.header-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
-  width: 100%;
-}
-.install-banner-icon {
-  width: 50px;
-  height: 50px;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  border-radius: 12px;
-  background: var(--accent-soft);
+  gap: 8px;
   flex-shrink: 0;
 }
-.install-banner-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.install-banner-text {
-  flex: 1;
-  min-width: 0;
-}
-.install-banner-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--text);
-}
-.install-banner-sub {
-  font-size: 12px;
-  color: var(--muted);
-  margin-top: 2px;
-}
-.install-banner-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 14px;
-}
-.install-banner-actions button {
-  flex: 1;
-  min-height: 42px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-.install-dismiss {
-  background: var(--surface-2);
-  color: var(--muted);
-}
-.install-dismiss:hover {
-  background: var(--surface-3);
-}
-.install-action {
+.install-btn {
+  height: 40px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--radius-full);
   background: var(--accent);
   color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.14s ease;
 }
-.install-action:hover {
-  opacity: 0.9;
+.install-btn .icon {
+  width: 18px;
+  height: 18px;
+}
+.install-btn:active {
+  transform: scale(0.95);
+}
+.install-btn[hidden] {
+  display: none;
 }
 
 .hidden {
@@ -2586,7 +2527,6 @@ html[dir="ltr"] {
   }
   html[data-sidebar="open"] .fab-wrap,
   html[data-sidebar="open"] .composer-panel,
-  html[data-sidebar="open"] .install-banner,
   html[data-sidebar="open"] .toastify {
     left: calc(50% + var(--sb-shift));
   }
