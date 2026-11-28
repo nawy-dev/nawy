@@ -621,3 +621,30 @@ test("install: the appinstalled event hides the button", async () => {
   assert.equal(await page.locator("#installBtn").isVisible(), false);
   await close();
 });
+
+test("the game opens offline after only the main app was visited (precached from the first visit)", async () => {
+  const page = await open(`${base}/index.html`);
+  await page.waitForTimeout(2500); // يسجّل الـ service worker ويخزّن الـ shell
+  assert.equal(await page.evaluate(() => navigator.serviceWorker.getRegistration().then(r => !!r)), true);
+  await page.close();
+  await ctx.setOffline(true);
+  const errors = [];
+  try {
+    const game = await ctx.newPage();
+    game.on("pageerror", e => errors.push(String(e).slice(0, 160)));
+    await game.goto(`${base}/game.html`);
+    await game.waitForTimeout(2500);
+    assert.ok(await game.locator("canvas").count(), "the game canvas is missing offline");
+    assert.ok(
+      await game.evaluate(async () => {
+        await document.fonts.ready;
+        return [...document.fonts].some(f => f.family.replace(/"/g, "") === "Press Start 2P" && f.status === "loaded");
+      }),
+      "game font missing offline"
+    );
+    assert.deepEqual(errors, []);
+    await game.close();
+  } finally {
+    await ctx.setOffline(false);
+  }
+});

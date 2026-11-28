@@ -55,6 +55,29 @@ html {
   overscroll-behavior-y: none;
 }
 
+/* لون الأكسنت للنص والأيقونات الصغيرة: نفس الأكسنت في الداكن، وأغمق منه شوية في الفاتح عشان يعدّي تباين 4.5:1 (WCAG AA). الخلفيات والأزرار بتفضل var(--accent) */
+:root {
+  --accent-ink: var(--accent);
+}
+html[data-accent="purple"] {
+  --accent-ink: #9468f8;
+}
+html[data-theme="light"][data-accent="blue"] {
+  --accent-ink: #3367d6;
+}
+html[data-theme="light"][data-accent="green"] {
+  --accent-ink: #0b7c56;
+}
+html[data-theme="light"][data-accent="purple"] {
+  --accent-ink: #7a51d8;
+}
+html[data-theme="light"][data-accent="orange"] {
+  --accent-ink: #956007;
+}
+html[data-theme="light"][data-accent="pink"] {
+  --accent-ink: #bd3a7a;
+}
+
 html[data-accent="blue"] {
   --accent: #3d7bff;
   --accent-soft: rgba(61, 123, 255, 0.1);
@@ -205,7 +228,7 @@ textarea {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .brand-icon svg {
   width: 28px;
@@ -279,6 +302,12 @@ textarea {
   border: none;
   cursor: pointer;
 }
+/* منطقة اللمس 44px من غير ما شكل التاب يتغيّر (::after للخط التحتاني) */
+.tab::before {
+  content: "";
+  position: absolute;
+  inset: -4px -6px;
+}
 .tab::after {
   content: "";
   position: absolute;
@@ -303,7 +332,7 @@ textarea {
     stroke 0.2s ease;
 }
 .tab.active {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .tab.active::after {
   background: var(--accent);
@@ -567,7 +596,7 @@ html[dir="rtl"] .section.collapsed .section-chevron {
   place-items: center;
   border-radius: var(--radius-md);
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-ink);
   font-size: 24px;
 }
 .empty-title {
@@ -779,7 +808,7 @@ html[dir="rtl"] .section.collapsed .section-chevron {
     transform 0.15s ease;
 }
 .sheet-close:hover {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .sheet-close:active {
   transform: scale(0.88);
@@ -806,7 +835,7 @@ html[dir="rtl"] .section.collapsed .section-chevron {
   top: 50%;
   right: 14px;
   transform: translateY(-50%);
-  color: var(--accent);
+  color: var(--accent-ink);
   opacity: 0.8;
   font-size: 18px;
 }
@@ -981,7 +1010,7 @@ html[data-theme="light"] #taskActions {
   place-items: center;
   border-radius: 50%;
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .account-menu-avatar .icon {
   width: 22px;
@@ -1033,7 +1062,7 @@ html[dir="rtl"] .nav-back .icon {
   font-weight: 700;
 }
 .backup-group-head .icon {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .backup-group-subtitle {
   margin: -2px 0 4px 29px;
@@ -1064,7 +1093,7 @@ html[dir="rtl"] .backup-group-subtitle {
   display: grid;
   place-items: center;
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .backup-status-icon .icon {
   width: 18px;
@@ -1463,7 +1492,7 @@ html[data-theme="light"] .action-task-preview {
   border: 1px solid var(--border);
   border-radius: 11px;
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-ink);
   transition:
     transform 0.16s ease,
     background 0.16s ease;
@@ -1585,7 +1614,7 @@ html[dir="ltr"] .toggle-switch input:checked + .toggle-slider::before {
   border-radius: 10px;
   border: 1px solid var(--border-strong);
   background: var(--surface);
-  color: var(--accent);
+  color: var(--accent-ink);
   font-size: 14px;
   font-weight: 700;
   text-align: center;
@@ -1613,8 +1642,10 @@ html[dir="ltr"] .toggle-switch input:checked + .toggle-slider::before {
   align-items: center;
   gap: 6px;
   border-radius: var(--radius-full);
-  background: var(--accent);
-  color: #fff;
+  /* نص وحد بلون الأكسنت الغامق على سطح التطبيق: بيعدّي تباين 4.5:1 في كل الأكسنتات والوضعين (الأبيض على الأكسنت ما بيعديش) */
+  background: var(--surface);
+  color: var(--accent-ink);
+  border: 1.5px solid var(--accent-ink);
   font-size: 13px;
   font-weight: 700;
   box-shadow: var(--shadow-soft);
@@ -1858,7 +1889,7 @@ html[data-theme="light"] .toastify {
 .stat-hero-number {
   font-size: 32px;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .stat-hero-label {
   font-size: var(--fs-sm);
@@ -1960,7 +1991,7 @@ html[data-theme="light"] .toastify {
   height: 34px;
   border-radius: var(--radius-sm);
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--accent-ink);
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -2157,6 +2188,12 @@ html[data-theme="light"] .toastify {
   justify-content: center;
   color: var(--muted);
 }
+/* لمس 44px (الشكل 32px زي ما هو) */
+.today-more::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+}
 .today-more:active {
   background: var(--surface-2);
 }
@@ -2184,7 +2221,7 @@ html[data-theme="light"] .toastify {
   z-index: 1;
   font-size: 42px;
   line-height: 0.3;
-  color: var(--accent);
+  color: var(--accent-ink);
   opacity: 0.5;
   font-family: Georgia, serif;
 }
@@ -2223,7 +2260,7 @@ html[data-theme="light"] .toastify {
   z-index: 1;
   font-size: var(--fs-xs);
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-ink);
   letter-spacing: 0.4px;
 }
 .today-change-btn {
@@ -2235,6 +2272,12 @@ html[data-theme="light"] .toastify {
   font-size: var(--fs-xs);
   color: var(--muted);
   margin-top: -2px;
+}
+/* الزر شكله 18px بس: منطقة اللمس أكبر عشان ما يتفوّتش */
+.today-change-btn::before {
+  content: "";
+  position: absolute;
+  inset: -10px -8px;
 }
 .today-change-btn .icon {
   width: 14px;
@@ -2252,6 +2295,7 @@ html[data-theme="light"] .toastify {
   padding: 6px;
 }
 .today-action {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2262,12 +2306,18 @@ html[data-theme="light"] .toastify {
   background: none;
   border: 0;
 }
+/* لمس 44px بدل 38px (الشكل زي ما هو) */
+.today-action::before {
+  content: "";
+  position: absolute;
+  inset: -3px 0;
+}
 .today-action .icon {
   width: 19px;
   height: 19px;
 }
 .today-action.check.active {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .today-action.star.active {
   color: #f59e0b;
@@ -2717,7 +2767,7 @@ html[dir="ltr"] {
 #updateMenuBtn[data-state="available"] .menu-item-title,
 #updateMenuBtn[data-state="available"] .menu-item-sub,
 #updateMenuBtn[data-state="available"] .icon {
-  color: var(--accent);
+  color: var(--accent-ink);
   opacity: 1;
 }
 #updateMenuBtn[data-state="available"] .menu-item-sub {
@@ -2757,7 +2807,7 @@ html[dir="ltr"] {
   pointer-events: none;
 }
 #pullIndicator.ready {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 #pullIndicator.busy .icon {
   animation: nawy-spin 0.9s linear infinite;

@@ -9,6 +9,7 @@ const appGlobals = {
   confetti: "readonly",
   NawyData: "readonly",
   NawyDates: "readonly",
+  NawyArchiveView: "readonly",
   NawyTombstones: "readonly",
   NawyShare: "readonly",
   NawySounds: "readonly",
@@ -434,6 +435,11 @@ export default [
   {
     // tombstones.js: ES module؛ دوال صافية على قوائم
     files: ["tombstones.js"],
+    languageOptions: { sourceType: "module", ecmaVersion: 2022, globals: { ...globals.browser } }
+  },
+  {
+    // archive-view.js: ES module نقي (بيتحمّل بعد date-format.js وبياخد التواريخ كمعامل)
+    files: ["archive-view.js"],
     languageOptions: { sourceType: "module", ecmaVersion: 2022, globals: { ...globals.browser } }
   },
   {

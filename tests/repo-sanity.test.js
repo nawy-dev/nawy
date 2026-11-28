@@ -164,6 +164,11 @@ test("script order: Dexie, then nawy-data.js, nawy-storage.js, nawy-backup.js, t
   assert.ok(tombstonesJs > backup && tombstonesJs < app, "tombstones.js must load after the Core and before app.js");
   const dateFormat = html.indexOf('src="./date-format.js');
   assert.ok(dateFormat > backup && dateFormat < app, "date-format.js must load after the Core and before app.js");
+  const archiveViewJs = html.indexOf('src="./archive-view.js');
+  assert.ok(
+    archiveViewJs > backup && archiveViewJs < app,
+    "archive-view.js must load after the Core and before app.js"
+  );
   assert.ok(read("app.js").includes("const db = new Dexie("), "app.js must create the database");
   assert.ok(dexie > -1 && data > dexie && storage > data && backup > storage && app > backup, "wrong script order");
 });
@@ -316,6 +321,12 @@ test("page and service worker use the same version for nawy-data.js and nawy-sto
   assert.ok(
     read("service-worker.js").includes(`./date-format.js?v=${html[1]}`),
     "APP_SHELL must precache date-format.js with the same version"
+  );
+  const htmlAv = read("index.html").match(/archive-view\.js\?v=([\w.]+)/);
+  assert.ok(htmlAv && htmlAv[1] === html[1], "index.html must load archive-view.js with the same ?v");
+  assert.ok(
+    read("service-worker.js").includes(`./archive-view.js?v=${html[1]}`),
+    "APP_SHELL must precache archive-view.js with the same version"
   );
   const htmlCss = read("index.html").match(/styles\.css\?v=([\w.]+)/);
   assert.ok(htmlCss && htmlCss[1] === html[1], "index.html must load styles.css with the same ?v");
@@ -703,7 +714,7 @@ test("date-format.js is the first ES module: loaded as type=module, classic call
   assert.match(html, /<script type="module" src="\.\/date-format\.js\?v=[\w.]+"><\/script>/);
   assert.match(read("date-format.js"), /^export function formatAchievedDate/m);
   for (const f of ["list-view.js", "archive-stats.js"]) {
-    assert.ok(/NawyDates\./.test(read(f)), f + " must call NawyDates.*");
+    assert.ok(/NawyDates\b/.test(read(f)), f + " must use NawyDates (directly or by passing it to archive-view.js)");
     assert.ok(
       !/(^|[^.\w])(formatAchievedDate|formatArchivedTime|formatOlderDate|archiveDayGroup)\(/m.test(read(f)),
       f + " calls a date helper without NawyDates."
@@ -773,4 +784,26 @@ test("the install prompt is a header button (no bottom banner) and the startup r
   assert.ok(!app.includes("runDailyReminderCheck") && !read("reminders.js").includes("runDailyReminderCheck"));
   assert.ok(!read("reminders.js").includes("showToast(`🌱"), "no reminder toast at startup");
   assert.ok(app.includes("refreshInstallButton();") && read("banners.js").includes("display-mode"));
+});
+
+test("the game page works offline from the first visit: game.html, its modules and fonts are precached", () => {
+  const sw = read("service-worker.js");
+  const game = read("game.html");
+  const v = game.match(/game\.js\?v=([\w.]+)/)[1];
+  const modules = [...game.matchAll(/"nawy-game\/[\w-]+": "\.\/(game\/[\w-]+\.js)\?v=([\w.]+)"/g)];
+  assert.ok(modules.length >= 20, "game importmap entries not found");
+  const wanted = ["./game.html", `./game.js?v=${v}`, ...modules.map(m => `./${m[1]}?v=${m[2]}`)];
+  for (const [, , ver] of modules) assert.equal(ver, v, "every game module uses the page version");
+  const fonts = [...game.matchAll(/url\("\.\/(fonts\/[\w.-]+)"\)/g)].map(m => `./${m[1]}`);
+  assert.ok(fonts.includes("./fonts/press-start-2p.woff2") && fonts.includes("./fonts/handjet-ar.woff"));
+  const missing = [...wanted, ...fonts].filter(entry => !sw.includes(`"${entry}"`));
+  assert.deepEqual(missing, [], "not in APP_SHELL: " + missing.join(", "));
+});
+
+test("archive-view.js is an ES module: the archive screen model lives there, archive-stats.js only passes state in", () => {
+  assert.match(read("index.html"), /<script type="module" src="\.\/archive-view\.js\?v=[\w.]+"><\/script>/);
+  assert.match(read("archive-view.js"), /^export function buildArchiveView/m);
+  const stats = read("archive-stats.js");
+  assert.ok(stats.includes("NawyArchiveView.buildArchiveView("), "archive-stats.js must call the module");
+  assert.ok(!stats.includes("groupOrder"), "the grouping logic must not stay in archive-stats.js");
 });

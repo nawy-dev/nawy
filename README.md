@@ -38,7 +38,7 @@ npm test
 عند تغيير أي ملف في التطبيق يجب أن يصل التحديث للمستخدمين، فارفع الرقم في الأماكن التالية معاً (الاختبارات تتحقق أنها متطابقة):
 
 1. `CACHE_NAME` في `service-worker.js`
-2. `?v=` على رابط `manifest.json` و`styles.css` و`translations.js` و`sounds.js` و`share.js` و`sheet-gestures.js` و`banners.js` و`date-format.js` و`app.js` و`nawy-data.js` و`nawy-storage.js` و`nawy-backup.js` و`nawy-ui.js` في `index.html`
+2. `?v=` على رابط `manifest.json` و`styles.css` و`translations.js` و`sounds.js` و`share.js` و`sheet-gestures.js` و`banners.js` و`date-format.js` و`archive-view.js` و`app.js` و`nawy-data.js` و`nawy-storage.js` و`nawy-backup.js` و`nawy-ui.js` في `index.html`
 3. `importScripts(...)` و`APP_SHELL` في `service-worker.js`
 4. `?v=` على رابط `game.js` في `game.html` وعلى كل وحدة في الـ importmap اللي في `game.html` (نفس الرقم)
 
@@ -56,6 +56,7 @@ npm test
 | `sheet-gestures.js` | إيماءات النوافذ السفلية (سحب للإغلاق وسكرول)، بيتحمّل قبل `app.js`؛ الاستدعاء بيفضل في `app.js` |
 | `banners.js` | دوال زر التثبيت في الهيدر (إظهاره في المتصفح فقط وإخفاؤه بعد التثبيت)، بيتحمّل قبل `app.js`؛ المستمعين والاستدعاءات بتفضل في `app.js` |
 | `date-format.js` | تنسيق تواريخ الأرشيف، بيتحمّل قبل `app.js` |
+| `archive-view.js` | نموذج عرض شاشة الأرشيف (بحث وترتيب وتجميع بالأيام) كدالة صافية بتتختبر في Node، بيتحمّل قبل `app.js` |
 | `app.js` | منطق التطبيق (يكلّم الـ Core والتخزين والنسخ الاحتياطي عبر واجهاتهم) |
 | `src/core/*.ts` | **مصدر** طبقة البيانات والتخزين (TypeScript). هنا يتم التعديل |
 | `nawy-data.js` | الـ Core: schema ودمج وصيغة التصدير، وقرار التذكير وزر «تم ✓»، وحساب الإحصائيات، وكشف التغييرات قبل الحفظ، وتجديد نية اليوم. مشتركة مع الـ service worker. **مولَّد** من المصدر، لا يُعدَّل يدويًا |

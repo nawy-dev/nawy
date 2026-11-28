@@ -72,6 +72,7 @@ const REQUIRED = [
   "touch-gestures.js",
   "tombstones.js",
   "date-format.js",
+  "archive-view.js",
   "styles.css",
   "service-worker.js",
   "nawy-data.js",

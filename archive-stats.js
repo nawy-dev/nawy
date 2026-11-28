@@ -1,60 +1,17 @@
 // عرض الأرشيف والإحصائيات وتأكيد حذف كل الأرشيف: buildArchiveView و renderArchive و computeStats و renderStats و openDeleteAllConfirm و closeDeleteAllConfirm.
 // classic script بيتحمّل قبل app.js؛ تعريفات بس من غير تنفيذ وقت التحميل، وبيستخدم حالة app.js (tasks و archive و archiveSearchQuery) ودواله وقت التشغيل.
 /* exported renderArchive, renderStats, computeStats, openDeleteAllConfirm, closeDeleteAllConfirm, initArchiveControls */
-// نموذج عرض شاشة الأرشيف: كل المنطق (ترجمة، فلترة، ترتيب، تجميع بالأيام،
-// تنسيق التواريخ) هنا، والرسم نفسه (React أو الاحتياطي تحت) بيعرض النتيجة بس.
+// نموذج عرض شاشة الأرشيف (البحث والترتيب والتجميع بالأيام والتسميات): الحساب في archive-view.js (ES module نقي، بيتختبر في Node)؛
+// هنا بس بنجيب الحالة (الأرشيف والبحث واللغة) ونمررها له.
 function buildArchiveView() {
-  const total = archive.length;
-  if (total === 0) return { kind: "empty", message: t("noArchive") };
-
-  const query = archiveSearchQuery.trim().toLowerCase();
-  const filtered = query
-    ? archive.filter(task =>
-        String(task.text || "")
-          .toLowerCase()
-          .includes(query)
-      )
-    : archive;
-
-  if (filtered.length === 0) return { kind: "empty", message: t("noArchiveResults") };
-
-  const groups = /** @type {Record<string, any[]>} */ ({ today: [], yesterday: [], older: [] });
-  filtered
-    .slice()
-    .sort((a, b) => (Number(b.archivedAt) || 0) - (Number(a.archivedAt) || 0))
-    .forEach(task => {
-      const key = NawyDates.archiveDayGroup(task.archivedAt || task.updatedAt || Date.now());
-      groups[key].push(task);
-    });
-
-  const groupOrder = [
-    ["today", "archiveGroupToday"],
-    ["yesterday", "archiveGroupYesterday"],
-    ["older", "archiveGroupOlder"]
-  ];
-
-  return {
-    kind: "groups",
-    restoreLabel: t("restore"),
-    deleteLabel: t("delete"),
-    groups: groupOrder
-      .filter(([key]) => groups[key].length > 0)
-      .map(([key, labelKey]) => ({
-        key,
-        label: t(labelKey),
-        items: groups[key].map(task => {
-          const ts = task.archivedAt || task.updatedAt || Date.now();
-          return {
-            id: task.id,
-            text: task.text,
-            dateText:
-              key === "older"
-                ? tf("archiveArchivedAt", { time: NawyDates.formatOlderDate(ts, settings.language) })
-                : tf("archiveArchivedAt", { time: NawyDates.formatArchivedTime(ts, settings.language) })
-          };
-        })
-      }))
-  };
+  return NawyArchiveView.buildArchiveView({
+    archive,
+    query: archiveSearchQuery,
+    language: settings.language,
+    t,
+    tf,
+    dates: NawyDates
+  });
 }
 
 const archiveHandlers = {

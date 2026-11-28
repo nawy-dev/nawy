@@ -935,3 +935,22 @@ Format: `ID — title`, then status, date, decision, reason, rejected alternativ
 - Strings: `installTitle`, `installSub`, `installDismiss` removed from both languages; `installAction` is now "تثبيت" / "Install" (no emoji). `banners.js` keeps its name and load order and now holds `isAppInstalled`, `setInstalledFlag` and `refreshInstallButton`.
 - Tests: new unit test (header button, no banner, no startup toast) and four browser tests (button visible in a tab, hidden when standalone, hidden for good after accepting and back on a new prompt event, hidden on `appinstalled`). `npm test` 160 pass; browser tests 60 pass on Chromium (Firefox and WebKit run in CI).
 - Version: 1.62.0.
+
+## 123 — The game page works offline from the first visit
+
+- Decision 85 left `game.html` and its files out of the precache, so a user who had only used the main app and went offline got the main app's fallback page instead of the game. `game.html`, `game.js`, the 20 modules in its import map and the two game fonts (`press-start-2p.woff2`, `handjet-ar.woff`) are now in `APP_SHELL` with the same `?v=` as the page (42 more files, a few tens of KB).
+- Tests: a unit test derives the expected list from `game.html` itself (import map and `@font-face`), so a new game module that is not precached fails CI; a browser test visits only the main page, goes offline, opens `game.html` and checks the canvas, the pixel font and no script errors. The browser test fails without the precache change (checked).
+- Limit: the game's high scores and settings are local, so nothing else is needed offline; sharing a score card still needs the share sheet or a download, not the network.
+
+## 124 — Accessibility audit of the Today screen and fixes
+
+- Method: a Playwright script on the built site at 390 px, light and dark, for the five accent colours, checking names of controls, images without `alt`, tap-target sizes (including the real hit area, probed with `elementFromPoint`), text contrast against WCAG AA 4.5:1 / 3:1, and start-up timing. Start-up was already good (first paint about 0.2 s, 97 KB over 35 requests, no long tasks); nothing was unnamed.
+- Fixed: (1) accent-coloured text failed AA in light mode (blue 3.6, orange about 2) and purple on dark was 4.46; a new token `--accent-ink` (the accent in dark, a darker shade per accent in light, `#9468f8` for purple on dark) now colours the 17 `color: var(--accent)` text/icon declarations; backgrounds and borders still use `--accent`. (2) hit areas below 44 px (tabs 37, the "change" button 18, the more button 32, the action buttons 38) are extended with invisible `::before` boxes, so the look does not change; all measure 43 px or more now. (3) the new install button used white on the accent (2.1 to 3.8:1); it now has the surface colour with an `--accent-ink` text and border, which passes in all ten theme and accent combinations.
+- Not changed, on purpose: the other filled accent buttons (add, save, active segment) still put white text on the accent. That is the app's visual language, and for orange it fails AA; changing it is a design decision, not a bug fix. The audit covered the Today screen only, not every sheet and screen. There is no `h1` on the page (the app name is in the header mark); not changed.
+
+## 125 — `archive-view.js` is an ES module (the archive screen model)
+
+- Step four of the ES-module path (113, 114, 115, 117). `buildArchiveView` (search, sort, grouping by day, labels and the date text) moves out of `archive-stats.js` into `archive-view.js` as a pure function that takes the archive, the query, the language, `t`, `tf` and the date helpers as parameters. It does not import `date-format.js` (an import without the `?v=` query would be a second, uncached URL); `archive-stats.js` passes `NawyDates` in. Bridge: `NawyArchiveView`.
+- Behaviour unchanged: the React view and the fallback renderer receive the same object; the existing browser tests for the archive pass. New `tests/archive-view.test.js` (6 tests): empty vs no-results, newest first and empty groups omitted, case-insensitive and trimmed Arabic/English search, date text per group and language, fallback to `updatedAt` then now without mutating the input, and the bridge.
+- Registered like the other modules: `index.html`, `APP_SHELL`, `scripts/build-site.js`, ESLint, `tsconfig.pages.json`, page globals, README, AGENTS and skills. One older sanity test was updated: `archive-stats.js` now passes `NawyDates` instead of calling it.
+- Version: 1.63.0 (also covers the install-button work already in 1.62.0).
