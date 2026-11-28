@@ -954,3 +954,11 @@ Format: `ID — title`, then status, date, decision, reason, rejected alternativ
 - Behaviour unchanged: the React view and the fallback renderer receive the same object; the existing browser tests for the archive pass. New `tests/archive-view.test.js` (6 tests): empty vs no-results, newest first and empty groups omitted, case-insensitive and trimmed Arabic/English search, date text per group and language, fallback to `updatedAt` then now without mutating the input, and the bridge.
 - Registered like the other modules: `index.html`, `APP_SHELL`, `scripts/build-site.js`, ESLint, `tsconfig.pages.json`, page globals, README, AGENTS and skills. One older sanity test was updated: `archive-stats.js` now passes `NawyDates` instead of calling it.
 - Version: 1.63.0 (also covers the install-button work already in 1.62.0).
+
+## 126 — Accessibility audit of every screen: tokens and hit areas
+
+- The audit of decision 124 now covers the all and favourites lists, the composer, the task sheet, the menu, stats, settings, backup and archive, in light and dark with the blue and orange accents.
+- Contrast fixed: a `--danger-ink` token (`#c62828` in light, `#f87171` in dark) for the red text and icons (the permanent-delete action was 2.8:1 in light, "حذف كل الأرشيف" 3.4 to 4.3); light `--muted` goes from `#6b7280` to `#646b78` (4.2 to 4.4 on tinted surfaces, 4.7 or more now). The dark look of the delete action is almost unchanged.
+- Hit areas: invisible `::before` boxes (the look is unchanged) for the done checkbox (20 px to 37 px, it was below the WCAG 2.2 minimum of 24), star, close button, colour swatches, archive buttons, segmented options, tone preview, menu and install buttons. They measure 37 to 47 px by probing, all above 24 px; 44 px was not reached for the checkbox because its neighbours cover part of the box. Native `<select>` controls (38 px) were not changed because they cannot hold a pseudo-element.
+- Still open, a design choice: filled accent buttons and the active segment use white text on the accent (blue 3.8:1, orange 2.1:1). Two options were previewed to the owner: a darker fill with white text, or the same fill with dark text. Nothing changed until one is chosen.
+- Version: 1.64.0. The audit script is a throwaway; the unit test only checks that the tokens and hit-area rules exist.

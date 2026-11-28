@@ -24,7 +24,8 @@ html[data-theme="light"] {
   --surface-2: #f5f5f4;
   --surface-3: #e7e5e4;
   --text: #1a1a1a;
-  --muted: #6b7280;
+  --muted: #646b78;
+  --danger-ink: #c62828;
   --border: #e5e7eb;
   --border-strong: #d1d5db;
   --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.03);
@@ -41,6 +42,7 @@ html[data-theme="dark"] {
   --surface-3: #2a2f36;
   --text: #e5e7eb;
   --muted: #9ca3af;
+  --danger-ink: #f87171;
   --border: #272a30;
   --border-strong: #3a3f46;
   --shadow-soft: 0 1px 4px rgba(0, 0, 0, 0.15);
@@ -1309,13 +1311,13 @@ html[dir="rtl"] .backup-group-subtitle {
   height: 16px;
 }
 .action-item.danger {
-  color: #ff6b6b;
+  color: var(--danger-ink);
   margin-top: 4px;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 0 0 15px 15px;
 }
 .action-item.danger .icon {
-  color: #ef4444;
+  color: var(--danger-ink);
 }
 .action-text {
   flex: 1;
@@ -1373,7 +1375,7 @@ html[data-theme="light"] .action-task-preview {
   opacity: 0.75;
 }
 .task-edit-counter.near-limit {
-  color: #ef4444;
+  color: var(--danger-ink);
   opacity: 1;
 }
 .task-edit-actions {
@@ -1798,7 +1800,7 @@ html[data-theme="light"] .toastify {
   border: 1px solid rgba(239, 68, 68, 0.32);
   border-radius: var(--radius-md);
   background: rgba(239, 68, 68, 0.08);
-  color: #ef4444;
+  color: var(--danger-ink);
   font-size: var(--fs-sm);
   font-weight: 700;
 }
@@ -1864,7 +1866,7 @@ html[data-theme="light"] .toastify {
   flex-shrink: 0;
 }
 .archive-icon-btn.danger {
-  color: #ef4444;
+  color: var(--danger-ink);
 }
 .archive-icon-btn:active {
   background: var(--surface-2);
@@ -2042,7 +2044,7 @@ html[data-theme="light"] .toastify {
   height: 42px;
   border-radius: 50%;
   background: rgba(239, 68, 68, 0.12);
-  color: #ef4444;
+  color: var(--danger-ink);
   display: grid;
   place-items: center;
   margin-bottom: 12px;
@@ -2834,4 +2836,47 @@ html[dir="rtl"] .brand {
     border-inline-start: 0;
     border-inline-end: 1px solid var(--border);
   }
+}
+
+/* مناطق لمس 44px (الشكل ما بيتغيّرش): مربع شفاف حوالين العنصر. الأفقي محفوظ للعناصر المتجاورة */
+.task-checkbox,
+.task-star,
+.archive-icon-btn,
+.segment,
+.tone-preview,
+.install-btn {
+  position: relative;
+}
+.task-checkbox::before,
+.task-star::before,
+.sheet-close-small::before,
+.color-btn::before,
+.archive-icon-btn::before,
+.segment::before,
+.tone-preview::before,
+.menu-btn::before,
+.install-btn::before {
+  content: "";
+  position: absolute;
+}
+.task-checkbox::before {
+  inset: -11px;
+}
+.task-star::before {
+  inset: -4px;
+}
+.sheet-close-small::before {
+  inset: -8px;
+}
+.color-btn::before,
+.archive-icon-btn::before,
+.segment::before {
+  inset: -8px 0;
+}
+.tone-preview::before {
+  inset: -3px;
+}
+.menu-btn::before,
+.install-btn::before {
+  inset: -2px;
 }

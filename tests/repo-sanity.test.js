@@ -807,3 +807,21 @@ test("archive-view.js is an ES module: the archive screen model lives there, arc
   assert.ok(stats.includes("NawyArchiveView.buildArchiveView("), "archive-stats.js must call the module");
   assert.ok(!stats.includes("groupOrder"), "the grouping logic must not stay in archive-stats.js");
 });
+
+test("accessibility tokens: text uses --accent-ink and --danger-ink, small controls get 44px invisible hit areas", () => {
+  const css = read("styles.css");
+  for (const token of ["--accent-ink", "--danger-ink"])
+    assert.ok(css.includes(token + ":"), token + " must be defined");
+  assert.ok(!/^\s+color: #ef4444;$/m.test(css) && !/color: #ff6b6b;/.test(css), "danger text must use --danger-ink");
+  assert.ok(!/^\s+color: var\(--accent\);$/m.test(css), "accent text must use --accent-ink");
+  for (const sel of [
+    ".task-checkbox",
+    ".task-star",
+    ".sheet-close-small",
+    ".color-btn",
+    ".archive-icon-btn",
+    ".segment"
+  ]) {
+    assert.ok(css.includes(`${sel}::before`), sel + " needs its hit-area box");
+  }
+});
